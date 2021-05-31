@@ -743,15 +743,15 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       if (header == null || header.size() != 2) {
         return null;
       }
-      String headerName = HeaderUtil.stripHeaderName(header.getString(0));
-      String headerValue = HeaderUtil.stripHeaderValue(header.getString(1));
+      String headerName = header.getString(0);
+      String headerValue = header.getString(1);
       if (headerName == null || headerValue == null) {
         return null;
       }
-      headersBuilder.add(headerName, headerValue);
+      headersBuilder.addUnsafeNonAscii(headerName, headerValue);
     }
     if (headersBuilder.get(USER_AGENT_HEADER_NAME) == null && mDefaultUserAgent != null) {
-      headersBuilder.add(USER_AGENT_HEADER_NAME, mDefaultUserAgent);
+      headersBuilder.addUnsafeNonAscii(USER_AGENT_HEADER_NAME, mDefaultUserAgent);
     }
 
     // Sanitize content encoding header, supported only when request specify payload as string

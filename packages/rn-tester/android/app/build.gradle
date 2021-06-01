@@ -126,7 +126,9 @@ def enableFabric = project.ext.react.enableFabric
 def useIntlJsc = false
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+    ndkVersion "22.1.7171670"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -148,7 +150,7 @@ android {
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type

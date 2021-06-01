@@ -6,13 +6,22 @@
  */
 
 buildscript {
+    ext {
+        buildToolsVersion = '30.0.3'
+        minSdkVersion = 24
+        compileSdkVersion = 30
+        targetSdkVersion = 30
+        ndkVersion = '22.1.7171670'
+    }
     repositories {
         mavenLocal()
         google()
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.0")
+        classpath 'com.android.tools.build:gradle:4.2.1'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
 }
 
@@ -23,6 +32,19 @@ allprojects {
         jcenter()
     }
 }
+
+subprojects { subproject ->
+    afterEvaluate {
+        if (subproject.hasProperty('android')) {
+            android {
+                buildToolsVersion '30.0.3'
+                compileSdkVersion 30
+                ndkVersion '22.1.7171670'
+            }
+        }
+    }
+}
+
 
 // This task is required when using react-native-codegen from source, instead of npm.
 task('buildCodegenCLI', type: Exec) {

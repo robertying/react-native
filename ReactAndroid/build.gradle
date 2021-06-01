@@ -92,11 +92,19 @@ task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
     dest(new File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
 }
 
+def follyReplaceContent = '''
+  ssize_t r;
+  do {
+    r = open(name, flags, mode);
+  } while (r == -1 && errno == EINTR);
+  return r;
+'''
 task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy) {
     from(dependenciesPath ?: tarTree(downloadFolly.dest))
     from("src/main/jni/third-party/folly/Android.mk")
     include("folly-${FOLLY_VERSION}/folly/**/*", "Android.mk")
     eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
+       filter { line -> line.replaceAll('return int\\(wrapNoInt\\(open, name, flags, mode\\)\\);', follyReplaceContent) }
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/folly")
 }
@@ -319,7 +327,8 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
             "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
             "BUILD_FABRIC=$enableFabric",
             "-C", file("src/main/jni/react/jni").absolutePath,
-            "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
+            "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors(),
+            "--output-sync=none"
     )
 }
 
@@ -381,7 +390,9 @@ task extractJNIFiles {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+    ndkVersion "22.1.7171670"
 
     compileOptions {
         sourceCompatibility(JavaVersion.VERSION_1_8)
@@ -390,7 +401,7 @@ android {
 
     defaultConfig {
         minSdkVersion(21)
-        targetSdkVersion(28)
+        targetSdkVersion(30)
         versionCode(1)
         versionName("1.0")
 
